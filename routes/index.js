@@ -15,7 +15,9 @@ routes.get('/routes', (req, res) => {
 routes.get('/user/:id',UserController.getUser);
 routes.post('/register', UserController.register);
 routes.post('/login', passport.authenticate('local'),(req,res,next)=>{
-  res.json('Your are logged in !!')
+  // console.log(req)
+  res.json({userId :req.user.user_id,empName:req.user.employee_name,email:req.user.email});
+  // console.log(req)
 })
 
 // app.use(function (err, req, res, next) {

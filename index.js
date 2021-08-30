@@ -7,11 +7,13 @@ const setupDB=require('./db/db');
 const knex=require('knex');
 const config=require('./db/knexfile.js')
 const passport = require('passport');
+const cors = require('cors')
 require('./config/passport');
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }));
 setupDB();
+app.use(cors())
 const sessionOptions = {
     secret: 'keyboard cat',
     cookie: {
