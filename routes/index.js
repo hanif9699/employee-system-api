@@ -1,5 +1,5 @@
 const routes = require('express').Router();
-const UserController=require('../controller/user');
+const UserController = require('../controller/user');
 const User = require('../db/models/user');
 const passport = require('passport')
 
@@ -10,14 +10,20 @@ routes.get('/', (req, res) => {
   // res.status(200).json({ message: 'Connected!' });
 });
 routes.get('/routes', (req, res) => {
-    res.status(200).json({ message: 'Connected!' });
-  });
-routes.get('/user/:id',UserController.getUser);
+  res.status(200).json({ message: 'Connected!' });
+});
+routes.get('/user/:id', UserController.getUser);
 routes.post('/register', UserController.register);
-routes.post('/login', passport.authenticate('local'),(req,res,next)=>{
-  // console.log(req)
-  res.json({userId :req.user.user_id,empName:req.user.employee_name,email:req.user.email});
-  // console.log(req)
+routes.post('/login', (req, res, next) => {
+  passport.authenticate('local', function (err, user, info) {
+    if (err) { return next(err); }
+    if (!user) {
+      res.status(401)
+      res.json({error:info.message})
+      return
+    }
+    res.json({ userId: user.user_id, empName: user.employee_name, email: user.email });
+  })(req, res, next)
 })
 
 // app.use(function (err, req, res, next) {

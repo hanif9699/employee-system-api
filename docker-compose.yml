@@ -1,0 +1,50 @@
+version: "3.4"
+services: 
+  knex-learn:
+    build: 
+      context: .
+      dockerfile: ./docker/Dockerfile
+    depends_on:
+      - mysql
+    stdin_open: true
+    tty: true
+    # command: bash -c 'while !</dev/tcp/db/3306; do sleep 1; done; npm start'
+    networks:
+      - frontend
+      - backend
+    ports:
+      - 5000:5000
+  mysql:
+    image: mysql:5.7
+    restart: always
+    networks:
+      - backend
+    environment:
+      - MYSQL_ROOT_PASSWORD=badsha
+      - MYSQL_DATABASE=hr_system
+    volumes: 
+      - db-config:/etc/mysql
+      - db-data:/var/lib/mysql
+      - ./db/backup/files/:/data_backup/data
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:4.7
+    restart: always
+    depends_on:
+      - mysql
+    networks:
+      - backend
+    ports:
+      - "3306:80"  
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT= 3306
+    volumes:
+      - /sessions
+    
+
+networks:
+  frontend:
+  backend:
+volumes: 
+  db-config:
+  db-data:

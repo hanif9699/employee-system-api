@@ -3,7 +3,8 @@ const LocalStrategy = require('passport-local').Strategy;
 const User=require('../dao/user');
 const customFields = {
     usernameField: 'email',
-    passwordField: 'password'
+    passwordField: 'password',
+    // passReqToCallback: true
 }
 
 passport.use(new LocalStrategy(customFields,
@@ -12,10 +13,10 @@ passport.use(new LocalStrategy(customFields,
         // console.log('passpoert',user)
         if (err) { return done(err); }
         if (!user) {
-          return done(null, false, { message: 'Incorrect username.' });
+          return done(null, false, { message: 'User doesnt exist' });
         }
         if (!user.verifyPassword(password)) {
-          return done(null, false, { message: 'Incorrect password.' });
+          return done(null, false, { message: 'Incorrect password' });
         }
         return done(null, user);
       });

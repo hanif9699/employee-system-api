@@ -6,7 +6,8 @@ module.exports = {
     connection: {
       database: 'hr_system',
       user:     'root',
-      password: ''
+      password: 'badsha',
+      host: 'mysql'
     },
     pool: {
       min: 2,
