@@ -1,8 +1,9 @@
 const User = require('../db/models/user');
 
 class UserDAO {
-  findById(id) {
-    return User.query().findOne({ user_id: id }).withGraphFetched('managers');
+  async findById(id) {
+    const user = await User.query().findOne({ user_id: id });
+    return user
   }
   register({ employee_name, password, user_role, email }) {
     const usr = User.query().findOne({ email })

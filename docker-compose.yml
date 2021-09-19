@@ -43,6 +43,27 @@ services:
       - PMA_PORT= 3306
     volumes:
       - /sessions
+  redis:
+    image: redis:6.2.5
+    restart: always
+    networks: 
+      - backend
+    ports: 
+      - 6379:6379
+    environment: 
+      - REDIS_PASSWORD=badsha
+    volumes: 
+      - redis_data:/data
+  redis-commander:
+    image: rediscommander/redis-commander
+    restart: always
+    networks: 
+      - backend
+    environment: 
+      - REDIS_HOSTS=local:redis:6379
+    ports: 
+      - 8000:8081
+
     
 
 networks:
@@ -51,3 +72,4 @@ networks:
 volumes: 
   db-config:
   db-data:
+  redis_data:

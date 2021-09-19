@@ -1,5 +1,7 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+const JwtStrategy = require('passport-jwt').Strategy,
+    ExtractJwt = require('passport-jwt').ExtractJwt;
 const User=require('../dao/user');
 const customFields = {
     usernameField: 'email',
@@ -7,7 +9,7 @@ const customFields = {
     // passReqToCallback: true
 }
 
-passport.use(new LocalStrategy(customFields,
+passport.use('local',new LocalStrategy(customFields,
     function(username, password, done) {
       User.findOne({ email: username }, function (err, user) {
         // console.log('passpoert',user)
@@ -22,7 +24,18 @@ passport.use(new LocalStrategy(customFields,
       });
     }
   ));
-
+  let opts = {}
+  opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+  opts.secretOrKey = process.env.jwt_access_secret_key;
+  passport.use('jwt',new JwtStrategy(opts, function(jwt_payload, done) {
+      let expirationCheck = new Date(jwt_payload.exp * 1000)
+      console.log(jwt_payload)
+      if(expirationCheck < new Date()){
+          done(null,false)
+      }
+      done(null,jwt_payload)
+  }))
+  
 passport.serializeUser((user, done) => {
     // console.log(user)
     done(null, user.user_id);

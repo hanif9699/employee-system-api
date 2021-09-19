@@ -59,6 +59,10 @@ class User extends Model {
     isManager(){
         
     }
+    async getRole(){
+        const roleObj= await this.$relatedQuery('role')
+        return roleObj.role
+    }
     verifyPassword(pwd) {
         return crypto.createHash('md5').update(pwd).digest("hex") === this.password
     }
