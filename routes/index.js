@@ -2,8 +2,10 @@ const routes = require('express').Router();
 const UserController = require('../controller/user');
 // const User = require('../db/models/user');
 const passport = require('passport')
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken')
 const User = require('../dao/user')
+const randtoken = require('rand-token')
+const client = require('../redis/index')
 
 routes.get('/', (req, res) => {
   const n = req.session.views || 0;
@@ -17,7 +19,7 @@ routes.get('/routes', (req, res) => {
 routes.get('/user/:id', UserController.getUser);
 routes.post('/register', UserController.register);
 routes.post('/login', (req, res, next) => {
-  User.findOne({ email: req.body.email }, async function(err, user) {
+  User.findOne({ email: req.body.email }, async function (err, user) {
     // console.log('passpoert',user)
     if (err) {
       res.status(401)
@@ -32,12 +34,16 @@ routes.post('/login', (req, res, next) => {
       res.json({ error: 'Incorrect Password' })
     }
     const role = await user.getRole()
-    const access_token = jwt.sign({ email: user.email,role:role },process.env.jwt_access_secret_key,{expiresIn:process.env.jwt_access_time})
-    res.json({message:'Login sucessful',data:{access_token}})
+    const access_token = jwt.sign({ email: user.email, role: role, id: user.user_id }, process.env.jwt_access_secret_key, { expiresIn: process.env.jwt_access_time })
+    const refresh_token = randtoken.uid(256)
+    client.hmset(user.email,[{[refresh_token]:Date.now()}],function(){
+      
+    })
+    res.json({ message: 'Login sucessful', data: { access_token } })
   })
 })
-routes.get('/protected',passport.authenticate('jwt',{ session: false }),(req,res,next)=>{
-  res.json({message:'You are authenticated'})
+routes.get('/protected', passport.authenticate('jwt', { session: false }), (req, res, next) => {
+  res.json({ message: 'You are authenticated' })
 })
 // app.use(function (err, req, res, next) {
 //   console.error(err.stack)

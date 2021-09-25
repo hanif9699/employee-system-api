@@ -48,8 +48,6 @@ services:
     restart: always
     networks: 
       - backend
-    ports: 
-      - 6379:6379
     environment: 
       - REDIS_PASSWORD=badsha
     volumes: 

@@ -29,7 +29,6 @@ passport.use('local',new LocalStrategy(customFields,
   opts.secretOrKey = process.env.jwt_access_secret_key;
   passport.use('jwt',new JwtStrategy(opts, function(jwt_payload, done) {
       let expirationCheck = new Date(jwt_payload.exp * 1000)
-      console.log(jwt_payload)
       if(expirationCheck < new Date()){
           done(null,false)
       }
